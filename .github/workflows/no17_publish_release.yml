@@ -1,0 +1,54 @@
+name: Publish No.17 v1.0.0 release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/NO17_PUBLISH_RELEASE"
+
+permissions:
+  contents: write
+
+jobs:
+  publish-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pinned clean release commit
+        uses: actions/checkout@v4
+        with:
+          ref: da0410947c288ad6fb73c1611a40fb4a0e017edf
+
+      - name: Verify complete SHA-256 manifest
+        shell: bash
+        run: |
+          sha256sum -c SHA256SUMS.txt
+
+      - name: Re-run independent audit
+        shell: bash
+        run: |
+          python NO17_SECOND_DIAGONAL_VERIFY.py | tee /tmp/no17_verify.txt
+          grep -q '"failures": 0' /tmp/no17_verify.txt
+          grep -q '"all_pass": true' /tmp/no17_verify.txt
+
+      - name: Replace draft with final v1.0.0 release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          if gh release view v1.0.0 >/dev/null 2>&1; then
+            IS_DRAFT="$(gh release view v1.0.0 --json isDraft --jq '.isDraft')"
+            if [ "$IS_DRAFT" = "false" ]; then
+              echo "v1.0.0 is already published; no action needed."
+              exit 0
+            fi
+            gh release delete v1.0.0 --yes
+          fi
+
+          gh release create v1.0.0 \
+            --target "da0410947c288ad6fb73c1611a40fb4a0e017edf" \
+            --title "No.17 v1.0.0" \
+            --notes-file RELEASE_NOTES_v1.0.0.md \
+            Yonezu_2026_No17_Second_Diagonal.pdf \
+            SHA256SUMS.txt \
+            VERIFICATION_OUTPUT.txt
