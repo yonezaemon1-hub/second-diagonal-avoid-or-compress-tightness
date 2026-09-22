@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite the paper and this repository."
+title: "Exact Tightness on the Second Subset Diagonal of the Avoid-or-Compress Lemma"
+type: software
+authors:
+  - family-names: Yonezu
+    given-names: Ryutaro
+version: 1.0.0
+date-released: 2026-09-22
+repository-code: "https://github.com/yonezaemon1-hub/second-diagonal-avoid-or-compress-tightness"
