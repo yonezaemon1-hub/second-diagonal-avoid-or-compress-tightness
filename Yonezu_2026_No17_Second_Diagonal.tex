@@ -1,0 +1,295 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\usepackage{enumitem}
+\usepackage{array}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\newcommand{\Acal}{\mathcal A}
+\newcommand{\tauac}{\tau_{\rm ac}}
+
+\title{Exact Tightness on the Second Subset Diagonal\\of the Avoid-or-Compress Lemma}
+\author{Ryutaro Yonezu\\Independent Researcher}
+\date{22 September 2026\\Revised draft -- not peer reviewed}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let $\Acal=(Q,\Sigma,\delta)$ be a synchronizing deterministic finite automaton, let $\varnothing\ne A\subsetneq S\subseteq Q$, and call a word $w$ successful if either $A\nsubseteq S w$ or $|S w|<|S|$. The avoid-or-compress lemma gives a successful word of length at most $n-|A|$, where $n=|Q|$. We determine the exact worst-case value on the second subset diagonal $|S|-|A|=2$. If $S=Q$, the exact value is $1$. If $S\subsetneq Q$, the bound $n-|A|=n-|S|+2$ is sharp, even after simultaneously requiring a binary alphabet, strong connectivity, and synchronization. We give explicit extremal families for every proper-subset parameter pair and prove exactness by a safe-subset invariant. Strong connectivity is immediate from the construction, while synchronization follows from a cycle-and-adjacent-merge argument. An independent breadth-first verifier checks 1,140 parameter pairs with $1\le |A|\le30$ and $3\le n-|A|\le40$, with no failures. Thus the general avoid-or-compress upper bound is exactly tight along the entire proper second diagonal under the binary strongly connected synchronizing restrictions.
+\end{abstract}
+
+\section{Introduction}
+Avoiding and compressing words are two of the basic local mechanisms used in the theory of synchronizing automata. Szyku\l a's avoid-or-compress lemma states that, whenever a proper target subset $A\subsetneq S$ can eventually be avoided from the image of $S$, one can either avoid $A$ or compress $S$ within $n-|A|$ steps \cite{Szykula2018,Szykula2026}. The recent open-problems survey emphasizes that tight parameter-dependent bounds are largely unknown, especially when one insists that extremal witnesses remain synchronizing and strongly connected \cite{Szykula2026}.
+
+This paper closes the first nontrivial proper diagonal beyond the fixed-state case. We impose
+\[
+|S|-|A|=2
+\]
+and determine the exact worst-case length. The answer is particularly clean: except at the full-set boundary $S=Q$, the general upper bound $n-|A|$ is attained exactly by an explicit binary, strongly connected, synchronizing family.
+
+The constructions are simple enough that the lower bound can be proved by tracking only the two states of $S\setminus A$. The parity of $L=n-|A|$ determines whether the extremal word is $b^{L-1}a$ or $b^{L-2}a^2$. The synchronization proof is independent of the avoid-or-compress lower bound: after a short entry word the full state set lies in a core on which one letter acts as a full cycle, while a second word induces one adjacent merge. Conjugating that merge around the cycle yields a reset word.
+
+\section{Preliminaries}
+We write the action of a word on the right. Thus $q w$ is the state reached from $q$ after reading $w$, and for $X\subseteq Q$,
+\[
+Xw=\{qw:q\in X\}.
+\]
+
+\begin{definition}[Avoid-or-compress distance]
+Let $\varnothing\ne A\subsetneq S\subseteq Q$. Define
+\[
+\tauac(\Acal;S,A)=\min\{|w|: A\nsubseteq Sw\text{ or }|Sw|<|S|\}.
+\]
+\end{definition}
+
+A word counted by $\tauac$ is called \emph{successful}; all shorter words are \emph{safe}. The avoid-or-compress lemma gives the upper bound
+\begin{equation}\label{eq:aoc-upper}
+\tauac(\Acal;S,A)\le n-|A|
+\end{equation}
+whenever the hypotheses of the lemma hold; in particular this applies in the synchronizing setting considered here \cite{Szykula2018,Szykula2026}.
+
+For the second diagonal write
+\[
+r=|A|,\qquad |S|=r+2,\qquad L=n-r=n-|A|.
+\]
+For a proper subset $S\subsetneq Q$ we have $L\ge3$.
+
+\section{Main theorem}
+\begin{theorem}[Exact second diagonal]\label{thm:main}
+Fix integers $n$ and $s$ with $3\le s\le n$, and let $|A|=s-2$.
+\begin{enumerate}[label=(\roman*)]
+\item If $s=n$, then every synchronizing $n$-state DFA satisfies
+\[
+\tauac(\Acal;Q,A)=1,
+\]
+and this value is exact.
+\item If $s<n$, then every synchronizing $n$-state DFA satisfies
+\[
+\tauac(\Acal;S,A)\le n-s+2,
+\]
+and for every such parameter pair there exists a binary, strongly connected, synchronizing automaton with
+\[
+\tauac(\Acal;S,A)=n-s+2.
+\]
+\end{enumerate}
+Consequently the general upper bound $n-|A|$ is exactly tight on the entire proper second diagonal, even under the binary, strongly connected, and synchronizing restrictions.
+\end{theorem}
+
+The upper bound is \eqref{eq:aoc-upper}. The rest of the paper constructs and verifies the matching lower bound.
+
+\section{Extremal construction}
+Fix $r\ge1$ and $L\ge3$. Let
+\[
+A=\{A_0,\ldots,A_{r-1}\},\qquad
+B=\{B_0,\ldots,B_{L-1}\},
+\]
+\[
+Q=A\cup B,\qquad S=A\cup\{B_0,B_1\}.
+\]
+The alphabet is $\{a,b\}$. Letter $b$ fixes $A$ and cyclically permutes $B$:
+\[
+A_i b=A_i,\qquad B_j b=B_{j+1\bmod L}.
+\]
+On $A$, letter $a$ is the chain
+\[
+A_0\to A_1\to\cdots\to A_{r-1}\to B_0.
+\]
+Its action on $B$ depends on the parity of $L$.
+
+If $L$ is odd, set
+\begin{equation}\label{eq:odd-a}
+B_j a=\begin{cases}
+A_0,&j\text{ even},\\
+B_1,&j\text{ odd}.
+\end{cases}
+\end{equation}
+If $L$ is even, set
+\begin{equation}\label{eq:even-a}
+B_j a=\begin{cases}
+A_0,&j\text{ even},\\
+B_1,&j\text{ odd and }j<L-1,\\
+B_2,&j=L-1.
+\end{cases}
+\end{equation}
+
+\section{Exact avoid-or-compress distance}
+\begin{lemma}[Odd $L$ safe corridor]\label{lem:odd}
+Assume $L$ is odd. Every word of length less than $L$ is safe, while
+\[
+w=b^{L-1}a
+\]
+is successful. Hence $\tauac(\Acal;S,A)=L$.
+\end{lemma}
+\begin{proof}
+For $0\le k\le L-1$ define
+\[
+S_k=A\cup\{B_k,B_{k+1\bmod L}\}.
+\]
+We have $S b^k=S_k$. If $0\le k\le L-2$, then $k$ and $k+1$ have opposite parity. By \eqref{eq:odd-a}, the two $B$-states are sent to $\{A_0,B_1\}$, while the $A$-chain contributes
+\[
+\{A_1,\ldots,A_{r-1},B_0\}.
+\]
+Thus $S_k a=S$ for $k\le L-2$.
+
+Every word can be written as alternating blocks of $b$'s separated by occurrences of $a$. Consider any occurrence of $a$ reached from $S$ after a block $b^k$ with $0\le k\le L-2$. The identity $S_k a=S$ shows that the whole block $b^k a$ returns the active subset exactly to $S$. Hence, in a shortest successful word, every such regular-corridor block may be deleted without changing the subset from which the remaining suffix starts. Repeating this deletion removes every occurrence of $a$ before the wrap-around defect. Thus any shortest successful word must begin with at least $L-1$ consecutive copies of $b$ before its first effective $a$, so no word of length less than $L$ can succeed. After exactly $L-1$ applications of $b$, the active pair is $\{B_{L-1},B_0\}$. Since $L$ is odd, both indices are even, so $a$ maps both states to $A_0$. The image loses one state and is compressed. Thus $b^{L-1}a$ is successful of length $L$.
+\end{proof}
+
+\begin{lemma}[Even $L$ safe corridor]\label{lem:even}
+Assume $L$ is even. Every word of length less than $L$ is safe, while
+\[
+w=b^{L-2}a^2
+\]
+is successful. Hence $\tauac(\Acal;S,A)=L$.
+\end{lemma}
+\begin{proof}
+For $0\le k\le L-3$, the consecutive pair $\{B_k,B_{k+1}\}$ contains one even state and one ordinary odd state. Equation \eqref{eq:even-a} therefore gives $S_k a=S$, exactly as in the odd case. Thus every occurrence of $a$ before the final two-state defect simply returns the active subset to $S$.
+
+After $L-2$ applications of $b$, the active pair is $\{B_{L-2},B_{L-1}\}$. The first $a$ maps it to $\{A_0,B_2\}$, so
+\[
+S b^{L-2}a=A\cup\{B_0,B_2\}.
+\]
+This image still contains all of $A$ and still has size $r+2$, hence is safe. A second $a$ sends both $B_0$ and $B_2$ to $A_0$, causing compression. Therefore $b^{L-2}a^2$ is successful and has length $L$.
+
+As in the odd case, write a word as alternating blocks of $b$'s separated by occurrences of $a$. Whenever an $a$ is applied after $b^k$ with $0\le k\le L-3$, the identity $S_k a=S$ shows that the block $b^k a$ returns exactly to $S$. Such a regular-corridor block can therefore be deleted from any shortest successful word. After all such deletions, a shortest candidate must first reach the defect directly from $S$, which requires $L-2$ consecutive copies of $b$. The next letter $a$ occurs at total length $L-1$ and gives $A\cup\{B_0,B_2\}$, which is still safe. Consequently every successful word needs at least one further letter and hence has length at least $L$. Since $b^{L-2}a^2$ succeeds at length $L$, no shorter successful word exists.
+\end{proof}
+
+Lemmas \ref{lem:odd} and \ref{lem:even} prove the lower-bound part of Theorem \ref{thm:main} for every proper subset.
+
+\section{Strong connectivity and synchronization}
+\begin{proposition}[Strong connectivity]\label{prop:sc}
+Every automaton in the construction is strongly connected.
+\end{proposition}
+\begin{proof}
+From every $A_i$, repeated applications of $a$ reach $B_0$. Letter $b$ then reaches every $B_j$. From any even-indexed $B_j$, letter $a$ reaches $A_0$. Hence every state reaches $A_0$, and $A_0$ reaches every state.
+\end{proof}
+
+For synchronization define the core
+\[
+C=A\cup\{B_0\},\qquad m=|C|=r+1.
+\]
+On $C$, letter $a$ is the $m$-cycle
+\[
+A_0\to A_1\to\cdots\to A_{r-1}\to B_0\to A_0.
+\]
+Write $\alpha=a|_C$.
+
+\begin{lemma}[Entry into the core]\label{lem:entry}
+If $L$ is odd, the word
+\[
+w_0=ab^{L-1}a
+\]
+maps $Q$ into $C$. If $L$ is even, the word
+\[
+w_0=a^2b^{L-2}a^2
+\]
+maps $Q$ into $C$.
+\end{lemma}
+\begin{proof}
+This follows by direct substitution from \eqref{eq:odd-a} and \eqref{eq:even-a}. The first one or two $a$'s collapse all $B$-states into a constant-size set, the power of $b$ positions that set at the unique wrap defect, and the final $a$ or $a^2$ places every image in $A\cup\{B_0\}$.
+\end{proof}
+
+\begin{lemma}[Adjacent merge on the core]\label{lem:merge}
+There is a word $\gamma$ whose restriction to $C$ fixes every core state except one state, which is mapped to its predecessor on the $\alpha$-cycle.
+\end{lemma}
+\begin{proof}
+For odd $L$ set
+\[
+u=bab^{L-1}a,
+\]
+and for even $L$ set
+\[
+u=b^{L-1}a^2.
+\]
+A direct evaluation on $C$ shows that $u$ acts as $\alpha^2$ except that the final two positions of the $\alpha$-cycle have the same image. Therefore
+\[
+\gamma=u\alpha^{m-2}
+\]
+is the identity on all but the last core position, which is mapped to its predecessor.
+\end{proof}
+
+\begin{proposition}[Synchronization]\label{prop:sync}
+Every automaton in the construction is synchronizing.
+\end{proposition}
+\begin{proof}
+By Lemma \ref{lem:entry}, first map $Q$ into $C$. By Lemma \ref{lem:merge}, the semigroup restricted to $C$ contains an adjacent idempotent merge. Conjugating $\gamma$ by powers of the full cycle $\alpha$ moves this adjacent merge to every edge of the cycle. Applying these merges successively reduces $C$ to one state. Prepending the entry word therefore yields a reset word for $Q$.
+\end{proof}
+
+\section{The full-set boundary}
+Suppose $S=Q$. A synchronizing automaton must contain a singular letter: if every letter were a permutation, every word would be a permutation and no reset word could exist. A singular letter compresses $Q$ in one step, while the empty word is not successful. Hence
+\[
+\tauac(\Acal;Q,A)=1.
+\]
+This proves the remaining part of Theorem \ref{thm:main}.
+
+\section{Computational audit}
+The proof is analytic, but we also implemented an independent verifier. For each pair
+\[
+1\le r\le30,\qquad 3\le L\le40,
+\]
+the program constructs the automaton, performs breadth-first search in the subset automaton to obtain the exact first-success distance, checks strong connectivity, and evaluates an explicit reset word built from the core entry and conjugated adjacent merges. This gives 1,140 tested parameter pairs, up to $n=70$. Every case passed:
+
+\begin{center}
+\begin{tabular}{lr}
+\toprule
+Check & Result\\
+\midrule
+Parameter pairs & 1,140\\
+Exact distance $=L$ & 1,140 / 1,140\\
+Strong connectivity & 1,140 / 1,140\\
+Explicit reset word & 1,140 / 1,140\\
+Failures & 0\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The verifier uses no external packages and is intended as reproducibility support rather than as a substitute for the proof.
+
+\section{Discussion}
+The second diagonal is the first infinite proper-subset line on which the avoid-or-compress upper bound can be tested against simultaneously binary, strong-connectivity, and synchronization constraints. Theorem \ref{thm:main} shows that none of these restrictions improves the general value: the full $n-|A|$ delay remains attainable.
+
+This also isolates where more interesting behavior can first occur. On the third diagonal $|S|-|A|=3$, the classical subset-compression bound already beats $n-|A|$ when $|S|=n-1$, creating a boundary phase transition. That case is treated separately in the companion paper on the third diagonal.
+
+\section*{Data and code availability}
+The accompanying script \texttt{NO17\_SECOND\_DIAGONAL\_VERIFY.py} reconstructs the family and reproduces the computational audit reported above.
+
+\begin{thebibliography}{9}
+\bibitem{Szykula2018}
+M. Szyku\l a,
+\newblock Improving the Upper Bound on the Length of the Shortest Reset Word,
+\newblock \emph{35th Symposium on Theoretical Aspects of Computer Science (STACS 2018)}, LIPIcs 96, Article 56, 2018.
+\newblock doi:10.4230/LIPIcs.STACS.2018.56.
+
+\bibitem{Szykula2026}
+M. Szyku\l a,
+\newblock Synchronizing Automata: Open Problems,
+\newblock \emph{Electronic Proceedings in Theoretical Computer Science} 451 (2026), 33--47.
+\newblock doi:10.4204/EPTCS.451.3; arXiv:2608.24245.
+
+\bibitem{Volkov2022}
+M. V. Volkov,
+\newblock Synchronization of finite automata,
+\newblock \emph{Russian Mathematical Surveys} 77(5) (2022), 819--891.
+
+\bibitem{Ferens2021}
+R. Ferens, M. Szyku\l a, and V. Vorel,
+\newblock Lower Bounds on Avoiding Thresholds,
+\newblock \emph{MFCS 2021}, LIPIcs 202, Article 46, 2021.
+\newblock doi:10.4230/LIPIcs.MFCS.2021.46.
+\end{thebibliography}
+
+\end{document}
