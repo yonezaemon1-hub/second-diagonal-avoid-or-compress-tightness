@@ -1,0 +1,14 @@
+{
+  "r_range": [
+    1,
+    30
+  ],
+  "L_range": [
+    3,
+    40
+  ],
+  "cases": 1140,
+  "failures": 0,
+  "all_pass": true,
+  "max_n": 70
+}
