@@ -1,0 +1,48 @@
+name: Prepare No.17 v1.0.0 draft release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/NO17_CREATE_DRAFT"
+
+permissions:
+  contents: write
+
+jobs:
+  prepare-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact release commit
+        uses: actions/checkout@v4
+
+      - name: Verify fixed PDF SHA-256
+        shell: bash
+        run: |
+          echo "f4488b5b49e2e6a6998fdc9efa6ca10085a37b2becd99ee61d5ae8227807c5e6  Yonezu_2026_No17_Second_Diagonal.pdf" | sha256sum -c -
+
+      - name: Re-run independent audit
+        shell: bash
+        run: |
+          python NO17_SECOND_DIAGONAL_VERIFY.py | tee /tmp/no17_verify.txt
+          grep -q '"failures": 0' /tmp/no17_verify.txt
+          grep -q '"all_pass": true' /tmp/no17_verify.txt
+
+      - name: Create draft release if absent
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          if gh release view v1.0.0 >/dev/null 2>&1; then
+            echo "Release v1.0.0 already exists; leaving it unchanged."
+            exit 0
+          fi
+          gh release create v1.0.0 \
+            --draft \
+            --target "$GITHUB_SHA" \
+            --title "No.17 v1.0.0" \
+            --notes-file RELEASE_NOTES_v1.0.0.md \
+            Yonezu_2026_No17_Second_Diagonal.pdf \
+            SHA256SUMS.txt \
+            VERIFICATION_OUTPUT.txt
