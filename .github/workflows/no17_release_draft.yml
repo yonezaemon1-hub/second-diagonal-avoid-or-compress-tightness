@@ -17,10 +17,10 @@ jobs:
       - name: Check out exact release commit
         uses: actions/checkout@v4
 
-      - name: Verify fixed PDF SHA-256
+      - name: Verify complete SHA-256 manifest
         shell: bash
         run: |
-          echo "f4488b5b49e2e6a6998fdc9efa6ca10085a37b2becd99ee61d5ae8227807c5e6  Yonezu_2026_No17_Second_Diagonal.pdf" | sha256sum -c -
+          sha256sum -c SHA256SUMS.txt
 
       - name: Re-run independent audit
         shell: bash
