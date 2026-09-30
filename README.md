@@ -22,7 +22,8 @@ The proper-subset lower bound is attained by explicit binary, strongly connected
 - `NO17_SECOND_DIAGONAL_VERIFY.py` — independent verifier.
 - `VERIFICATION_OUTPUT.txt` — output from the default audit run.
 - `SHA256SUMS.txt` — SHA-256 manifest for the release files.
-- `CITATION.cff` — citation metadata.\n- Zenodo Software DOI: `10.5281/zenodo.22907153` (published archival software record).
+- `CITATION.cff` — citation metadata.
+- Zenodo Software DOI: `10.5281/zenodo.22907153` (published archival software record).
 
 ## Reproduce the computational audit
 
